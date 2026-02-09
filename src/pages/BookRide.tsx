@@ -31,7 +31,7 @@ const BookRide = () => {
       toast.error("Please set both pickup and drop-off locations");
       return;
     }
-    toast.success("Searching for a driver…");
+    navigate(`/tracking?plat=${pickup[0]}&plon=${pickup[1]}&dlat=${dropoff[0]}&dlon=${dropoff[1]}`);
   };
 
   return (
