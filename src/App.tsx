@@ -9,6 +9,7 @@ import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import BookRide from "./pages/BookRide";
 import LiveTracking from "./pages/LiveTracking";
+import AdminPortal from "./pages/AdminPortal";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/book" element={<BookRide />} />
             <Route path="/tracking" element={<LiveTracking />} />
+            <Route path="/admin" element={<AdminPortal />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
