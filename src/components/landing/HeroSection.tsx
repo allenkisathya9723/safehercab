@@ -36,7 +36,7 @@ const HeroSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <Button size="lg" asChild className="text-base px-8 h-12 animate-pulse-glow">
-                <Link to="/auth?tab=signup">Book a Ride</Link>
+                <Link to="/book">Book a Ride</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="text-base px-8 h-12">
                 <Link to="/auth?tab=signup&role=driver">Drive with Us</Link>
