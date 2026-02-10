@@ -14,6 +14,10 @@ const Footer = () => {
               Safe<span className="text-primary">Her</span>Ride
             </span>
           </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/book" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Book a Ride</Link>
+            <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Admin</Link>
+          </div>
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} SafeHerRide. Safety first, always.
           </p>

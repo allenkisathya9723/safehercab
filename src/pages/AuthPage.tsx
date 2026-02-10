@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Shield, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") === "signup" ? "signup" : "login";
+  const role = searchParams.get("role");
   const [tab, setTab] = useState<"login" | "signup">(defaultTab);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,10 +28,11 @@ const AuthPage = () => {
   const { toast } = useToast();
 
   // Redirect if already logged in
-  if (user) {
-    navigate("/", { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate("/book", { replace: true });
+    }
+  }, [user, navigate]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -60,7 +62,7 @@ const AuthPage = () => {
             toast({ title: "Error", description: error.message, variant: "destructive" });
           }
         } else {
-          navigate("/");
+          navigate("/book");
         }
       } else {
         const { error } = await signUp(email, password, fullName);
@@ -74,6 +76,8 @@ const AuthPage = () => {
           toast({ title: "Check your email", description: "We've sent a verification link to your email." });
         }
       }
+    } catch {
+      toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -95,12 +99,12 @@ const AuthPage = () => {
               </div>
             </div>
             <CardTitle className="font-display text-2xl">
-              {tab === "login" ? "Welcome back" : "Create your account"}
+              {tab === "login" ? "Welcome back" : role === "driver" ? "Register as Driver" : "Create your account"}
             </CardTitle>
             <CardDescription>
               {tab === "login"
                 ? "Sign in to your SafeHerRide account"
-                : "Join SafeHerRide for safer rides"}
+                : role === "driver" ? "Join SafeHerRide as a verified driver" : "Join SafeHerRide for safer rides"}
             </CardDescription>
           </CardHeader>
 

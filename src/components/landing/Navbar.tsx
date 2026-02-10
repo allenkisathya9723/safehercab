@@ -3,9 +3,11 @@ import { Shield, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
@@ -23,15 +25,24 @@ const Navbar = () => {
           <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
           <a href="#safety" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Safety</a>
           <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
+          <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Admin</Link>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" asChild>
-            <Link to="/auth">Log In</Link>
-          </Button>
-          <Button asChild>
-            <Link to="/auth?tab=signup">Get Started</Link>
-          </Button>
+          {user ? (
+            <Button asChild>
+              <Link to="/book">Book a Ride</Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/auth">Log In</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/auth?tab=signup">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -54,13 +65,22 @@ const Navbar = () => {
               <a href="#features" className="text-sm py-2" onClick={() => setMobileOpen(false)}>Features</a>
               <a href="#safety" className="text-sm py-2" onClick={() => setMobileOpen(false)}>Safety</a>
               <a href="#how-it-works" className="text-sm py-2" onClick={() => setMobileOpen(false)}>How it Works</a>
+              <Link to="/admin" className="text-sm py-2" onClick={() => setMobileOpen(false)}>Admin Portal</Link>
               <div className="flex gap-3 pt-2">
-                <Button variant="ghost" asChild className="flex-1">
-                  <Link to="/auth">Log In</Link>
-                </Button>
-                <Button asChild className="flex-1">
-                  <Link to="/auth?tab=signup">Get Started</Link>
-                </Button>
+                {user ? (
+                  <Button asChild className="flex-1">
+                    <Link to="/book">Book a Ride</Link>
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="ghost" asChild className="flex-1">
+                      <Link to="/auth">Log In</Link>
+                    </Button>
+                    <Button asChild className="flex-1">
+                      <Link to="/auth?tab=signup">Get Started</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
