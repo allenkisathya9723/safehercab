@@ -10,7 +10,7 @@ interface TrackingMapProps {
   progress: number;
 }
 
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 const TILE_ATTR = '&copy; <a href="https://carto.com">CARTO</a> &copy; <a href="https://openstreetmap.org">OSM</a>';
 
 const TrackingMap = ({ pickup, dropoff, driverPosition, progress }: TrackingMapProps) => {
