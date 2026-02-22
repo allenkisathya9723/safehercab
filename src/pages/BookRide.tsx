@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Shield } from "lucide-react";
+import { ArrowLeft, Shield, LocateFixed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LocationInput from "@/components/booking/LocationInput";
 import BookingMap from "@/components/booking/BookingMap";
@@ -20,6 +20,41 @@ const BookRide = () => {
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
   const [femaleOnly, setFemaleOnly] = useState(true);
   const [routePref, setRoutePref] = useState<"fastest" | "safest" | "balanced">("safest");
+  const [locating, setLocating] = useState(false);
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        setPickup([lat, lon]);
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+          const data = await res.json();
+          setPickupText(data.display_name?.split(",").slice(0, 3).join(",") || "My Location");
+        } catch {
+          setPickupText("My Location");
+        }
+        setLocating(false);
+        toast.success("Location detected!");
+      },
+      () => {
+        toast.error("Unable to get your location. Please allow location access.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  // Auto-detect location on mount
+  useEffect(() => {
+    if (!pickup) useMyLocation();
+  }, []);
 
   const handleConfirm = () => {
     if (!user) {
@@ -57,16 +92,30 @@ const BookRide = () => {
         <div className="space-y-5 pb-8">
           {/* Locations */}
           <div className="space-y-3">
-            <LocationInput
-              label="Pickup"
-              placeholder="Search pickup location…"
-              value={pickupText}
-              icon="pickup"
-              onChange={(text, lat, lon) => {
-                setPickupText(text);
-                setPickup([lat, lon]);
-              }}
-            />
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <LocationInput
+                  label="Pickup"
+                  placeholder="Search pickup location…"
+                  value={pickupText}
+                  icon="pickup"
+                  onChange={(text, lat, lon) => {
+                    setPickupText(text);
+                    setPickup([lat, lon]);
+                  }}
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 shrink-0"
+                onClick={useMyLocation}
+                disabled={locating}
+                title="Use my location"
+              >
+                <LocateFixed className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
+              </Button>
+            </div>
             <LocationInput
               label="Drop-off"
               placeholder="Where are you going?"
