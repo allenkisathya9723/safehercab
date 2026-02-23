@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, AlertTriangle, Shield } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Shield, Phone, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import TrackingMap from "@/components/tracking/TrackingMap";
 import DriverInfoCard, { type DriverInfo } from "@/components/tracking/DriverInfoCard";
 import RideStatusTimeline, { type RideStatus } from "@/components/tracking/RideStatusTimeline";
@@ -29,7 +30,6 @@ const STATUS_SEQUENCE: RideStatus[] = [
   "completed",
 ];
 
-// Durations in ms for each status before advancing
 const STATUS_DURATIONS: Record<RideStatus, number> = {
   searching: 3000,
   driver_assigned: 2000,
@@ -62,6 +62,7 @@ const LiveTracking = () => {
   const [status, setStatus] = useState<RideStatus>("searching");
   const [driverProgress, setDriverProgress] = useState(0);
   const [sosTriggered, setSosTriggered] = useState(false);
+  const [sosDialogOpen, setSosDialogOpen] = useState(false);
   const animFrameRef = useRef<number>();
   const statusIdxRef = useRef(0);
 
@@ -104,13 +105,12 @@ const LiveTracking = () => {
     if (status !== "en_route") return;
     let start: number | null = null;
     const duration = STATUS_DURATIONS.en_route;
-    const approachStart: [number, number] = lerp(dropoff, pickup, -0.3); // start from behind pickup
 
     const animate = (ts: number) => {
       if (!start) start = ts;
       const elapsed = ts - start;
       const t = Math.min(elapsed / duration, 1);
-      setDriverProgress(-1 + t); // negative indicates approach phase
+      setDriverProgress(-1 + t);
       if (t < 1) {
         animFrameRef.current = requestAnimationFrame(animate);
       }
@@ -123,13 +123,11 @@ const LiveTracking = () => {
 
   const driverPosition: [number, number] = (() => {
     if (status === "searching" || status === "driver_assigned") {
-      // Driver far from pickup
       return lerp(dropoff, pickup, -0.4);
     }
     if (status === "en_route") {
-      // Approaching pickup
       const approachStart: [number, number] = lerp(dropoff, pickup, -0.3);
-      const t = Math.max(0, driverProgress + 1); // -1..0 mapped to 0..1
+      const t = Math.max(0, driverProgress + 1);
       return lerp(approachStart, pickup, t);
     }
     if (status === "arrived") {
@@ -138,14 +136,75 @@ const LiveTracking = () => {
     if (status === "trip_started") {
       return lerp(pickup, dropoff, Math.max(0, driverProgress));
     }
-    return dropoff; // completed
+    return dropoff;
   })();
 
   const handleSOS = useCallback(() => {
+    setSosDialogOpen(true);
+  }, []);
+
+  const triggerSOS = useCallback(() => {
     setSosTriggered(true);
-    toast.error("🚨 SOS Alert sent! Emergency services notified.", {
-      duration: 5000,
-    });
+    setSosDialogOpen(false);
+
+    // Try to get current location and share
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const locationUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+          
+          toast.error("🚨 SOS Alert Activated!", {
+            description: `Location shared: ${locationUrl}`,
+            duration: 10000,
+          });
+
+          // Try to call emergency number
+          window.open("tel:112", "_self");
+        },
+        () => {
+          toast.error("🚨 SOS Alert Activated!", {
+            description: "Emergency services have been notified.",
+            duration: 10000,
+          });
+          window.open("tel:112", "_self");
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else {
+      toast.error("🚨 SOS Alert Activated!", {
+        description: "Emergency services notified.",
+        duration: 10000,
+      });
+      window.open("tel:112", "_self");
+    }
+  }, []);
+
+  const shareLocation = useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const url = `https://www.google.com/maps?q=${lat},${lon}`;
+          const text = `🚨 I need help! My live location: ${url}`;
+          
+          if (navigator.share) {
+            try {
+              await navigator.share({ title: "SOS - SafeHerRide", text, url });
+            } catch {
+              await navigator.clipboard.writeText(text);
+              toast.success("Location copied to clipboard!");
+            }
+          } else {
+            await navigator.clipboard.writeText(text);
+            toast.success("Location copied to clipboard!");
+          }
+        },
+        () => toast.error("Unable to get location")
+      );
+    }
   }, []);
 
   const showDriver = status !== "searching";
@@ -173,19 +232,22 @@ const LiveTracking = () => {
             progress={driverProgress}
           />
 
-          {/* SOS Button */}
+          {/* SOS Button - Large, glowing, always prominent */}
           {status !== "completed" && status !== "searching" && (
             <button
               onClick={handleSOS}
               disabled={sosTriggered}
-              className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm shadow-lg transition-all ${
+              className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 px-8 py-4 rounded-full font-bold text-base shadow-2xl transition-all ${
                 sosTriggered
                   ? "bg-muted text-muted-foreground cursor-not-allowed"
-                  : "bg-destructive text-destructive-foreground hover:scale-105 animate-pulse-glow"
+                  : "bg-destructive text-destructive-foreground hover:scale-110 active:scale-95 ring-4 ring-destructive/30 animate-pulse"
               }`}
+              style={!sosTriggered ? {
+                boxShadow: "0 0 30px rgba(220, 38, 38, 0.5), 0 0 60px rgba(220, 38, 38, 0.2)",
+              } : {}}
             >
-              <AlertTriangle className="h-5 w-5" />
-              {sosTriggered ? "SOS Sent" : "SOS Emergency"}
+              <AlertTriangle className="h-6 w-6" />
+              {sosTriggered ? "SOS Sent ✓" : "🚨 SOS Emergency"}
             </button>
           )}
         </div>
@@ -221,6 +283,46 @@ const LiveTracking = () => {
           )}
         </div>
       </div>
+
+      {/* SOS Confirmation Dialog */}
+      <Dialog open={sosDialogOpen} onOpenChange={setSosDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-center text-destructive text-xl flex items-center justify-center gap-2">
+              <AlertTriangle className="h-6 w-6" />
+              Emergency SOS
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              This will call emergency services (112) and share your live location.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <Button
+              className="w-full h-14 text-lg font-bold gap-3"
+              variant="destructive"
+              onClick={triggerSOS}
+            >
+              <Phone className="h-5 w-5" />
+              Call 112 Emergency
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full h-11 gap-2"
+              onClick={shareLocation}
+            >
+              <Share2 className="h-4 w-4" />
+              Share My Location
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={() => setSosDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
