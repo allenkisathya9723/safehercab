@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, AlertTriangle, Shield, Phone, MapPin, Share2 } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Shield, Phone, MapPin, Share2, UserPlus, X, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import TrackingMap from "@/components/tracking/TrackingMap";
 import DriverInfoCard, { type DriverInfo } from "@/components/tracking/DriverInfoCard";
 import RideStatusTimeline, { type RideStatus } from "@/components/tracking/RideStatusTimeline";
@@ -63,6 +64,13 @@ const LiveTracking = () => {
   const [driverProgress, setDriverProgress] = useState(0);
   const [sosTriggered, setSosTriggered] = useState(false);
   const [sosDialogOpen, setSosDialogOpen] = useState(false);
+  const [contactsDialogOpen, setContactsDialogOpen] = useState(false);
+  const [emergencyContacts, setEmergencyContacts] = useState<{ name: string; phone: string }[]>(() => {
+    const saved = localStorage.getItem("emergency_contacts");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [newContactName, setNewContactName] = useState("");
+  const [newContactPhone, setNewContactPhone] = useState("");
   const animFrameRef = useRef<number>();
   const statusIdxRef = useRef(0);
 
@@ -207,18 +215,90 @@ const LiveTracking = () => {
     }
   }, []);
 
+  const addEmergencyContact = useCallback(() => {
+    if (!newContactName.trim() || !newContactPhone.trim()) {
+      toast.error("Please enter both name and phone number");
+      return;
+    }
+    const updated = [...emergencyContacts, { name: newContactName.trim(), phone: newContactPhone.trim() }];
+    setEmergencyContacts(updated);
+    localStorage.setItem("emergency_contacts", JSON.stringify(updated));
+    setNewContactName("");
+    setNewContactPhone("");
+    toast.success(`${newContactName} added as emergency contact`);
+  }, [newContactName, newContactPhone, emergencyContacts]);
+
+  const removeContact = useCallback((idx: number) => {
+    const updated = emergencyContacts.filter((_, i) => i !== idx);
+    setEmergencyContacts(updated);
+    localStorage.setItem("emergency_contacts", JSON.stringify(updated));
+  }, [emergencyContacts]);
+
+  const notifyEmergencyContacts = useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const url = `https://www.google.com/maps?q=${lat},${lon}`;
+          const text = `🚨 EMERGENCY! I need help. My location: ${url}`;
+
+          for (const contact of emergencyContacts) {
+            const smsLink = `sms:${contact.phone}?body=${encodeURIComponent(text)}`;
+            window.open(smsLink, "_blank");
+          }
+          toast.success(`Alert sent to ${emergencyContacts.length} emergency contact(s)!`);
+        },
+        () => toast.error("Unable to get location")
+      );
+    }
+  }, [emergencyContacts]);
+
   const showDriver = status !== "searching";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
+      {/* Header with SOS at top-right */}
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex items-center gap-3 px-4 py-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/book")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-lg font-semibold text-foreground font-display">Live Tracking</h1>
-          <Shield className="ml-auto h-5 w-5 text-primary" />
+          
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1 text-xs"
+              onClick={() => setContactsDialogOpen(true)}
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Contacts</span>
+              {emergencyContacts.length > 0 && (
+                <span className="ml-1 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                  {emergencyContacts.length}
+                </span>
+              )}
+            </Button>
+            <button
+              onClick={handleSOS}
+              disabled={sosTriggered}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-extrabold text-sm uppercase tracking-wider transition-all ${
+                sosTriggered
+                  ? "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
+                  : "bg-red-600 text-white hover:bg-red-700 hover:scale-105 active:scale-95 animate-pulse"
+              }`}
+              style={!sosTriggered ? {
+                boxShadow: "0 0 20px 4px rgba(220, 38, 38, 0.5), 0 0 40px 8px rgba(220, 38, 38, 0.2)",
+                border: "2px solid rgba(255, 100, 100, 0.7)",
+              } : {}}
+            >
+              <AlertTriangle className="h-5 w-5" />
+              {sosTriggered ? "SOS Sent ✓" : "🚨 SOS"}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -231,24 +311,6 @@ const LiveTracking = () => {
             driverPosition={driverPosition}
             progress={driverProgress}
           />
-
-          {/* SOS Button - Always visible, massive, unmissable */}
-          <button
-            onClick={handleSOS}
-            disabled={sosTriggered}
-            className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-10 py-5 rounded-full font-extrabold text-lg tracking-wide uppercase transition-all ${
-              sosTriggered
-                ? "bg-muted/80 text-muted-foreground cursor-not-allowed opacity-60"
-                : "bg-red-600 text-white hover:bg-red-700 hover:scale-110 active:scale-95 ring-[6px] ring-red-500/40 animate-pulse"
-            }`}
-            style={!sosTriggered ? {
-              boxShadow: "0 0 40px 8px rgba(220, 38, 38, 0.6), 0 0 80px 16px rgba(220, 38, 38, 0.25), 0 4px 20px rgba(0,0,0,0.3)",
-              border: "3px solid rgba(255, 100, 100, 0.7)",
-            } : {}}
-          >
-            <AlertTriangle className="h-7 w-7" />
-            {sosTriggered ? "SOS Sent ✓" : "🚨 SOS EMERGENCY"}
-          </button>
         </div>
 
         {/* Info Panel */}
@@ -292,7 +354,7 @@ const LiveTracking = () => {
               Emergency SOS
             </DialogTitle>
             <DialogDescription className="text-center">
-              This will call emergency services (112) and share your live location.
+              This will call emergency services and notify your emergency contacts.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 mt-2">
@@ -304,6 +366,16 @@ const LiveTracking = () => {
               <Phone className="h-5 w-5" />
               Call 112 Emergency
             </Button>
+            {emergencyContacts.length > 0 && (
+              <Button
+                variant="outline"
+                className="w-full h-11 gap-2 border-destructive/50 text-destructive hover:bg-destructive/10"
+                onClick={notifyEmergencyContacts}
+              >
+                <Users className="h-4 w-4" />
+                Alert {emergencyContacts.length} Emergency Contact{emergencyContacts.length > 1 ? "s" : ""}
+              </Button>
+            )}
             <Button
               variant="outline"
               className="w-full h-11 gap-2"
@@ -319,6 +391,51 @@ const LiveTracking = () => {
             >
               Cancel
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Emergency Contacts Dialog */}
+      <Dialog open={contactsDialogOpen} onOpenChange={setContactsDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Emergency Contacts
+            </DialogTitle>
+            <DialogDescription>
+              Add trusted contacts who will be notified during an SOS emergency.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            {emergencyContacts.map((c, i) => (
+              <div key={i} className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30">
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-foreground truncate">{c.name}</p>
+                  <p className="text-xs text-muted-foreground">{c.phone}</p>
+                </div>
+                <button onClick={() => removeContact(i)} className="text-muted-foreground hover:text-destructive">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Input
+                placeholder="Contact name"
+                value={newContactName}
+                onChange={(e) => setNewContactName(e.target.value)}
+              />
+              <Input
+                placeholder="Phone number"
+                type="tel"
+                value={newContactPhone}
+                onChange={(e) => setNewContactPhone(e.target.value)}
+              />
+              <Button className="w-full gap-2" onClick={addEmergencyContact}>
+                <UserPlus className="h-4 w-4" />
+                Add Contact
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
