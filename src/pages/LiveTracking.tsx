@@ -235,13 +235,13 @@ const LiveTracking = () => {
           {/* SOS Button - Always visible, massive, unmissable */}
           <button
             onClick={handleSOS}
-            disabled={sosTriggered || status === "completed" || status === "searching"}
+            disabled={sosTriggered}
             className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-10 py-5 rounded-full font-extrabold text-lg tracking-wide uppercase transition-all ${
-              sosTriggered || status === "completed" || status === "searching"
+              sosTriggered
                 ? "bg-muted/80 text-muted-foreground cursor-not-allowed opacity-60"
                 : "bg-red-600 text-white hover:bg-red-700 hover:scale-110 active:scale-95 ring-[6px] ring-red-500/40 animate-pulse"
             }`}
-            style={!(sosTriggered || status === "completed" || status === "searching") ? {
+            style={!sosTriggered ? {
               boxShadow: "0 0 40px 8px rgba(220, 38, 38, 0.6), 0 0 80px 16px rgba(220, 38, 38, 0.25), 0 4px 20px rgba(0,0,0,0.3)",
               border: "3px solid rgba(255, 100, 100, 0.7)",
             } : {}}
