@@ -260,4 +260,123 @@ export const hyderabadLocations: HydLocation[] = [
   { name: "Sanjeevaiah Park", lat: 17.4270, lon: 78.4700, category: "Park" },
   { name: "Nehru Zoological Park", lat: 17.3500, lon: 78.4513, category: "Park" },
   { name: "Durgam Cheruvu Park", lat: 17.4350, lon: 78.3780, category: "Park" },
+
+  // Vignan's Institute
+  { name: "Vignan's Institute of Management and Technology for Women, Ghatkesar", lat: 17.4530, lon: 78.6230, category: "Engineering College" },
+
+  // Telangana Districts — Tourist Places
+  // Adilabad
+  { name: "Kawal Wildlife Sanctuary, Adilabad", lat: 19.2500, lon: 78.8200, category: "Tourist Place" },
+  { name: "Basar Saraswati Temple, Adilabad", lat: 18.8600, lon: 77.9800, category: "Tourist Place" },
+  { name: "Kuntala Falls, Adilabad", lat: 19.5100, lon: 78.3700, category: "Tourist Place" },
+
+  // Bhadradri Kothagudem
+  { name: "Bhadrachalam Temple, Bhadradri Kothagudem", lat: 17.6686, lon: 80.8936, category: "Tourist Place" },
+  { name: "Papi Kondalu, Bhadradri Kothagudem", lat: 17.4500, lon: 81.1500, category: "Tourist Place" },
+  { name: "Bogatha Waterfalls, Bhadradri Kothagudem", lat: 17.8200, lon: 80.6000, category: "Tourist Place" },
+
+  // Hanumakonda
+  { name: "Thousand Pillar Temple, Hanumakonda", lat: 17.9741, lon: 79.5619, category: "Tourist Place" },
+  { name: "Warangal Fort, Hanumakonda", lat: 17.9548, lon: 79.5941, category: "Tourist Place" },
+
+  // Jagtial
+  { name: "Jagtial Fort, Jagtial", lat: 18.7950, lon: 78.9150, category: "Tourist Place" },
+
+  // Jangaon
+  { name: "Yadagirigutta Temple, Jangaon", lat: 17.5908, lon: 78.9500, category: "Tourist Place" },
+
+  // Jayashankar Bhupalpally
+  { name: "Ramappa Temple (UNESCO), Jayashankar Bhupalpally", lat: 18.2500, lon: 79.9400, category: "Tourist Place" },
+
+  // Jogulamba Gadwal
+  { name: "Jogulamba Temple, Gadwal", lat: 15.9700, lon: 77.8100, category: "Tourist Place" },
+  { name: "Alampur Temples, Gadwal", lat: 15.8800, lon: 78.1300, category: "Tourist Place" },
+
+  // Kamareddy
+  { name: "Nizamsagar Dam, Kamareddy", lat: 18.1600, lon: 78.3000, category: "Tourist Place" },
+
+  // Karimnagar
+  { name: "Vemulawada Temple, Karimnagar", lat: 18.4700, lon: 78.8700, category: "Tourist Place" },
+  { name: "Kondagattu Anjaneya Temple, Karimnagar", lat: 18.5500, lon: 79.0200, category: "Tourist Place" },
+
+  // Khammam
+  { name: "Khammam Fort, Khammam", lat: 17.2473, lon: 80.1514, category: "Tourist Place" },
+  { name: "Kinnerasani Wildlife Sanctuary, Khammam", lat: 17.5800, lon: 80.7300, category: "Tourist Place" },
+
+  // Komaram Bheem Asifabad
+  { name: "Komaram Bheem Dam, Asifabad", lat: 19.3600, lon: 79.2800, category: "Tourist Place" },
+
+  // Mahabubabad
+  { name: "Pandavula Gutta, Mahabubabad", lat: 17.6000, lon: 80.0000, category: "Tourist Place" },
+
+  // Mahabubnagar
+  { name: "Pillalamarri Banyan Tree, Mahabubnagar", lat: 16.7370, lon: 77.9850, category: "Tourist Place" },
+  { name: "Koilsagar Dam, Mahabubnagar", lat: 16.5600, lon: 77.7100, category: "Tourist Place" },
+
+  // Mancherial
+  { name: "Mancherial Wildlife Area, Mancherial", lat: 18.8700, lon: 79.4400, category: "Tourist Place" },
+
+  // Medak
+  { name: "Medak Cathedral, Medak", lat: 18.0445, lon: 78.2600, category: "Tourist Place" },
+  { name: "Medak Fort, Medak", lat: 18.0500, lon: 78.2620, category: "Tourist Place" },
+
+  // Medchal-Malkajgiri
+  { name: "Shamirpet Lake, Medchal-Malkajgiri", lat: 17.5700, lon: 78.5600, category: "Tourist Place" },
+  { name: "Genome Valley, Medchal-Malkajgiri", lat: 17.5400, lon: 78.5100, category: "Tourist Place" },
+
+  // Mulugu
+  { name: "Sammakka-Saralamma Jatara, Mulugu", lat: 18.0300, lon: 80.3200, category: "Tourist Place" },
+  { name: "Eturnagaram Wildlife Sanctuary, Mulugu", lat: 18.3300, lon: 80.3000, category: "Tourist Place" },
+
+  // Nagarkurnool
+  { name: "Mallela Theertham Waterfalls, Nagarkurnool", lat: 16.2200, lon: 78.5300, category: "Tourist Place" },
+  { name: "Nagarjuna Sagar, Nagarkurnool", lat: 16.5720, lon: 79.3120, category: "Tourist Place" },
+
+  // Nalgonda
+  { name: "Nagarjuna Sagar Dam, Nalgonda", lat: 16.5720, lon: 79.3120, category: "Tourist Place" },
+  { name: "Bhongir Fort, Nalgonda", lat: 17.5100, lon: 78.8900, category: "Tourist Place" },
+
+  // Narayanpet
+  { name: "Handwoven Sarees Heritage, Narayanpet", lat: 16.7400, lon: 77.5000, category: "Tourist Place" },
+
+  // Nirmal
+  { name: "Nirmal Paintings Heritage, Nirmal", lat: 19.0960, lon: 78.3440, category: "Tourist Place" },
+  { name: "Kawal Tiger Reserve, Nirmal", lat: 19.2500, lon: 78.8200, category: "Tourist Place" },
+
+  // Nizamabad
+  { name: "Dichpally Ramalayam, Nizamabad", lat: 18.6200, lon: 78.2000, category: "Tourist Place" },
+
+  // Peddapalli
+  { name: "Ramagundam, Peddapalli", lat: 18.7600, lon: 79.4700, category: "Tourist Place" },
+
+  // Rajanna Sircilla
+  { name: "Vemulawada Temple, Rajanna Sircilla", lat: 18.4700, lon: 78.8700, category: "Tourist Place" },
+  { name: "Handloom Heritage, Sircilla", lat: 18.3900, lon: 78.8300, category: "Tourist Place" },
+
+  // Rangareddy
+  { name: "Chilkur Balaji Temple, Rangareddy", lat: 17.3172, lon: 78.3383, category: "Tourist Place" },
+  { name: "Himayat Sagar, Rangareddy", lat: 17.3300, lon: 78.3800, category: "Tourist Place" },
+
+  // Sangareddy
+  { name: "Sangareddy Jail Museum, Sangareddy", lat: 17.6167, lon: 78.0833, category: "Tourist Place" },
+
+  // Siddipet
+  { name: "Komuravelli Mallanna Temple, Siddipet", lat: 18.0500, lon: 78.8400, category: "Tourist Place" },
+
+  // Suryapet
+  { name: "Ancient Temples, Suryapet", lat: 17.1400, lon: 79.6300, category: "Tourist Place" },
+
+  // Vikarabad
+  { name: "Ananthagiri Hills, Vikarabad", lat: 17.3500, lon: 78.0800, category: "Tourist Place" },
+
+  // Wanaparthy
+  { name: "Wanaparthy Palace, Wanaparthy", lat: 16.3600, lon: 78.0600, category: "Tourist Place" },
+
+  // Warangal
+  { name: "Ramappa Temple, Warangal", lat: 18.2500, lon: 79.9400, category: "Tourist Place" },
+  { name: "Warangal Fort, Warangal", lat: 17.9548, lon: 79.5941, category: "Tourist Place" },
+
+  // Yadadri Bhuvanagiri
+  { name: "Yadagirigutta Temple, Yadadri Bhuvanagiri", lat: 17.5908, lon: 78.9500, category: "Tourist Place" },
+  { name: "Bhongir Fort, Yadadri Bhuvanagiri", lat: 17.5100, lon: 78.8900, category: "Tourist Place" },
 ];
